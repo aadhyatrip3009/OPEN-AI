@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioPredict AI | Clinical Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <!-- Ambient Backgrounds -->
+    <div class="ecg-background"></div>
+    <div class="blob purple-blob"></div>
+    <div class="blob cyan-blob"></div>
+    <div class="dot-grid"></div>
+
+    <div class="container">
+        
+        <header class="header mt-4">
+            <div class="header-left">
+                <img src="logo.png" alt="CardioPredict Logo" class="logo">
+                <div class="title-wrapper">
+                    <h1>CardioPredict AI</h1>
+                    <p>Clinical Risk Assessment Dashboard</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button id="btnNewPatient" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size:0.9rem; display:none;">New Patient</button>
+                <select id="langToggle" class="control-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                    <option value="gu">ગુજરાતી (Gujarati)</option>
+                    <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml">മലയാളം (Malayalam)</option>
+                    <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                    <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                    <option value="as">অসমীয়া (Assamese)</option>
+                </select>
+                <button id="themeToggle" class="control-btn" title="Toggle Light/Dark Theme">
+                    ☀️
+                </button>
+            </div>
+        </header>
+
+        <main class="content-area mt-4">
+            
+            <!-- Registration Window (Window 1) -->
+            <div id="registrationView" class="view-container">
+                <div class="dashboard-grid">
+                    <!-- Left Column: Registration Form -->
+                    <div class="glass-panel" style="text-align: center; padding: 2.5rem;">
+                        <div class="registration-icon mb-4" style="font-size: 3rem;">🏥</div>
+                        <h2 class="panel-heading" style="border:none; margin-bottom: 0.5rem; justify-content: center;">Patient Registration</h2>
+                        <p class="text-muted mb-4">Please register the patient to proceed with the cardiovascular risk assessment.</p>
+                        
+                        <form id="mainRegForm" style="text-align: left;">
+                            <div class="input-grid" style="grid-template-columns: 1fr;">
+                                <div class="input-wrap">
+                                    <label for="regFirstName">First Name</label>
+                                    <input type="text" id="regFirstName" required placeholder="Enter first name">
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="regLastName">Last Name</label>
+                                    <input type="text" id="regLastName" required placeholder="Enter last name">
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="regAge">Age</label>
+                                    <input type="number" id="regAge" required min="0" placeholder="Enter age">
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="regContact">Contact Info (Email/Phone)</label>
+                                    <input type="text" id="regContact" required placeholder="Enter contact info">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-4" style="padding: 1rem; font-size: 1.1rem; border-radius: 12px;">
+                                Proceed to Health Assessment ➜
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Patient Registry -->
+                    <div class="glass-panel" style="padding: 2rem;">
+                        <div class="panel-heading" style="border:none; margin-bottom: 1.5rem; font-size: 1.4rem;">
+                            Patient Registry
+                        </div>
+                        <div class="table-container" style="overflow-x: auto;">
+                            <table class="patient-details-table" id="registryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Contact</th>
+                                        <th>Risk Score</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="registryTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <p id="emptyRegistryMsg" class="text-muted mt-4 text-center" style="font-size:0.9rem;">No patients registered yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Parameter Window (Window 2) -->
+            <div id="healthView" class="view-container hidden">
+                <div class="dashboard-grid">
+                <div class="glass-panel form-panel">
+                    <h2 class="panel-heading" style="border:none; margin-bottom: 2rem;">Patient Data Entry</h2>
+                    <form id="predictionForm">
+                        <div class="form-section">
+                            <span class="divider-text" style="color: var(--accent-cyan); font-weight:700; font-size:0.85rem; letter-spacing:1px; display:block; margin-bottom:1rem;">DEMOGRAPHICS</span>
+                            <div class="input-grid">
+                                <div class="input-wrap">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" readonly class="readonly-input">
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" readonly class="readonly-input">
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="age">Age</label>
+                                    <input type="number" id="age" readonly class="readonly-input">
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="sex">Sex</label>
+                                    <select id="sex" required>
+                                        <option value="">Select...</option>
+                                        <option value="1">Male</option>
+                                        <option value="0">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section mt-4">
+                            <span class="divider-text" style="color: var(--accent-cyan); font-weight:700; font-size:0.85rem; letter-spacing:1px; display:block; margin-bottom:1rem;">VITALS & HABITS</span>
+                            <div class="input-grid">
+                                <div class="input-wrap">
+                                    <label for="currentSmoker">Current Smoker</label>
+                                    <select id="currentSmoker" required onchange="toggleCigs()">
+                                        <option value="">Select...</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="cigsPerDay">Cigs / Day</label>
+                                    <input type="number" id="cigsPerDay" min="0" disabled>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="bmi">BMI</label>
+                                    <input type="number" step="0.1" id="bmi" required>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="sysBP">Sys. BP (mmHg)</label>
+                                    <input type="number" id="sysBP" required>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="diaBP">Dia. BP (mmHg)</label>
+                                    <input type="number" id="diaBP" required>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="heartRate">Heart Rate</label>
+                                    <input type="number" id="heartRate" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section mt-4">
+                            <span class="divider-text" style="color: var(--accent-cyan); font-weight:700; font-size:0.85rem; letter-spacing:1px; display:block; margin-bottom:1rem;">LABORATORY & HISTORY</span>
+                            <div class="input-grid">
+                                <div class="input-wrap">
+                                    <label for="totChol">Tot. Chol (mg/dL)</label>
+                                    <input type="number" id="totChol" required>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="glucose">Glucose (mg/dL)</label>
+                                    <input type="number" id="glucose" required>
+                                </div>
+                                <div class="input-wrap">
+                                    <label for="diabetes">Diabetes</label>
+                                    <select id="diabetes" required>
+                                        <option value="">Select...</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block mt-4" id="btnGenerate">
+                            <span class="btn-text">Generate Assessment</span>
+                            <div class="spinner hidden"></div>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="glass-panel result-panel">
+                    <h2 class="panel-heading" style="border:none; margin-bottom: 2rem;">Analysis Results</h2>
+                    
+                    <div class="result-placeholder" id="resultPlaceholder" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; min-height: 400px; text-align: center;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="margin-bottom: 1rem;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"/></svg>
+                        <p style="color: var(--text-muted); font-size: 1.1rem;">Awaiting Patient Data</p>
+                    </div>
+                    
+                    <div class="result-content hidden" id="resultContent" style="position: relative;">
+                        <div class="text-center mb-4 mt-2">
+                            <div style="font-size: 4rem; font-weight: 700; color: var(--text-main); line-height: 1;"><span id="riskScoreVal">0.0</span>%</div>
+                            <div class="badge mt-3" id="riskLevelBadge" style="font-size: 1.2rem; padding: 0.5rem 1.5rem;">Low Risk</div>
+                        </div>
+
+                        <p id="resultSummary" class="text-center mt-4"></p>
+
+                        <div class="insight-box mt-4">
+                            <p><strong>Note:</strong> This prediction is based on the AI model trained on the Framingham Heart Study dataset. It estimates the risk of developing coronary heart disease over the next 10 years.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
